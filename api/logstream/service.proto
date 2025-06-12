@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package logstream;
+
+import "api/logstream/messages.proto";
+
+option go_package = "logstream/pkg/api/logstream;logstream";
+
+service LogsService {
+  // SaveLog - save log
+  rpc SaveLog(SaveLogRequest) returns (SaveLogResponse);
+
+  // SaveLogsStream - save logs
+  rpc SaveLogsStream(stream SaveLogsStreamRequest) returns (stream SaveLogsStreamResponse);
+
+  // ListLogs - list logs
+  rpc ListLogs(ListLogsRequest) returns (ListLogsResponse);
+
+  // ListLogsStream - list logs
+  rpc ListLogsStream(ListLogsStreamRequest) returns (stream ListLogsStreamResponse);
+}

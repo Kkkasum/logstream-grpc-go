@@ -1,0 +1,9 @@
+server:
+  host: localhost
+  port: 8080
+db:
+  host: localhost
+  user: postgres
+  password: postgres
+  name: logstream
+  port: 5432

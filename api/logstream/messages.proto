@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package logstream;
+
+option go_package = "logstream/pkg/api/logstream;logstream";
+
+enum Level {
+  LEVEL_INFO = 0;
+  LEVEL_WARN = 1;
+  LEVEL_ERROR = 2;
+}
+
+message Log {
+  string id = 1; // log id
+  string source = 2; // log source
+  Level level = 3; // log level (info, warn, error)
+  string message = 4;
+  int64 timestamp = 5;
+}
+
+message SaveLogRequest {
+  Log log = 1;
+}
+
+message SaveLogResponse {
+  int64 id = 1;
+}
+
+message SaveLogsStreamRequest {
+  Log log = 1;
+}
+
+message SaveLogsStreamResponse {
+  int64 id = 1;
+}
+
+message ListLogsRequest {
+  Level level = 1;
+  string keyword = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+}
+
+message ListLogsResponse {
+  repeated Log logs = 1;
+}
+
+message ListLogsStreamRequest {
+  Level level = 1;
+  string keyword = 2;
+  int64 start_time = 3;
+  int64 end_time = 4;
+}
+
+message ListLogsStreamResponse {
+  Log log = 1;
+}
