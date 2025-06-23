@@ -89,12 +89,12 @@ func (s *server) ListLogs(ctx context.Context, req *pb.ListLogsRequest) (*pb.Lis
 		return nil, err
 	}
 
+	source := req.GetSource()
 	level := int32(req.GetLevel().Number())
-	keyword := req.GetKeyword()
 	startTime := req.GetStartTime()
 	endTime := req.GetEndTime()
 
-	logs, err := s.r.GetLogs(ctx, level, keyword, startTime, endTime)
+	logs, err := s.r.GetLogs(ctx, source, level, startTime, endTime)
 	if err != nil {
 		st := status.New(codes.Internal, err.Error())
 		return nil, st.Err()
@@ -119,13 +119,13 @@ func (s *server) ListLogsStream(req *pb.ListLogsStreamRequest, stream pb.LogsSer
 		wg       sync.WaitGroup
 	)
 
+	source := req.GetSource()
 	level := int32(req.GetLevel().Number())
-	keyword := req.GetKeyword()
 	startTime := req.GetStartTime()
 	endTime := req.GetEndTime()
 
 	logCh := make(chan *pb.Log, 1)
-	logs, err := s.r.GetLogs(stream.Context(), level, keyword, startTime, endTime)
+	logs, err := s.r.GetLogs(stream.Context(), source, level, startTime, endTime)
 	if err != nil {
 		rpcError = err
 		return rpcError

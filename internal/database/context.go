@@ -32,12 +32,12 @@ func RunInTx(ctx context.Context, db *sql.DB, f func(ctx context.Context) error)
 
 	ctx = WithDB(ctx, db)
 	if err := f(ctx); err != nil {
-		if err1 := tx.Rollback().Error; err1 != nil {
+		if err1 := tx.Rollback(); err1 != nil {
 			return fmt.Errorf("failed to rollback tx: %v", err1)
 		}
 		return fmt.Errorf("failed to invoke func: %v", err)
 	}
-	if err := tx.Commit().Error; err != nil {
+	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit tx: %v", err)
 	}
 	return nil

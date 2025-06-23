@@ -72,7 +72,7 @@ func (Level) EnumDescriptor() ([]byte, []int) {
 
 type Log struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                             // log id
+	Id            *int32                 `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                      // log id
 	Source        string                 `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`                     // log source
 	Level         Level                  `protobuf:"varint,3,opt,name=level,proto3,enum=logstream.Level" json:"level,omitempty"` // log level (info, warn, error)
 	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
@@ -111,11 +111,11 @@ func (*Log) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Log) GetId() string {
-	if x != nil {
-		return x.Id
+func (x *Log) GetId() int32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
 	}
-	return ""
+	return 0
 }
 
 func (x *Log) GetSource() string {
@@ -192,7 +192,7 @@ func (x *SaveLogRequest) GetLog() *Log {
 
 type SaveLogResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -227,7 +227,7 @@ func (*SaveLogResponse) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *SaveLogResponse) GetId() int64 {
+func (x *SaveLogResponse) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -280,7 +280,7 @@ func (x *SaveLogsStreamRequest) GetLog() *Log {
 
 type SaveLogsStreamResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -315,7 +315,7 @@ func (*SaveLogsStreamResponse) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *SaveLogsStreamResponse) GetId() int64 {
+func (x *SaveLogsStreamResponse) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
@@ -324,8 +324,8 @@ func (x *SaveLogsStreamResponse) GetId() int64 {
 
 type ListLogsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Level         Level                  `protobuf:"varint,1,opt,name=level,proto3,enum=logstream.Level" json:"level,omitempty"`
-	Keyword       string                 `protobuf:"bytes,2,opt,name=keyword,proto3" json:"keyword,omitempty"`
+	Source        string                 `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	Level         Level                  `protobuf:"varint,2,opt,name=level,proto3,enum=logstream.Level" json:"level,omitempty"`
 	StartTime     int64                  `protobuf:"varint,3,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	EndTime       int64                  `protobuf:"varint,4,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -362,18 +362,18 @@ func (*ListLogsRequest) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{5}
 }
 
+func (x *ListLogsRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
 func (x *ListLogsRequest) GetLevel() Level {
 	if x != nil {
 		return x.Level
 	}
 	return Level_LEVEL_INFO
-}
-
-func (x *ListLogsRequest) GetKeyword() string {
-	if x != nil {
-		return x.Keyword
-	}
-	return ""
 }
 
 func (x *ListLogsRequest) GetStartTime() int64 {
@@ -436,8 +436,8 @@ func (x *ListLogsResponse) GetLogs() []*Log {
 
 type ListLogsStreamRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Level         Level                  `protobuf:"varint,1,opt,name=level,proto3,enum=logstream.Level" json:"level,omitempty"`
-	Keyword       string                 `protobuf:"bytes,2,opt,name=keyword,proto3" json:"keyword,omitempty"`
+	Source        string                 `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	Level         Level                  `protobuf:"varint,2,opt,name=level,proto3,enum=logstream.Level" json:"level,omitempty"`
 	StartTime     int64                  `protobuf:"varint,3,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	EndTime       int64                  `protobuf:"varint,4,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -474,18 +474,18 @@ func (*ListLogsStreamRequest) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{7}
 }
 
+func (x *ListLogsStreamRequest) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
 func (x *ListLogsStreamRequest) GetLevel() Level {
 	if x != nil {
 		return x.Level
 	}
 	return Level_LEVEL_INFO
-}
-
-func (x *ListLogsStreamRequest) GetKeyword() string {
-	if x != nil {
-		return x.Keyword
-	}
-	return ""
 }
 
 func (x *ListLogsStreamRequest) GetStartTime() int64 {
@@ -550,32 +550,33 @@ var File_api_logstream_messages_proto protoreflect.FileDescriptor
 
 const file_api_logstream_messages_proto_rawDesc = "" +
 	"\n" +
-	"\x1capi/logstream/messages.proto\x12\tlogstream\"\x8d\x01\n" +
-	"\x03Log\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
+	"\x1capi/logstream/messages.proto\x12\tlogstream\"\x99\x01\n" +
+	"\x03Log\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\x05H\x00R\x02id\x88\x01\x01\x12\x16\n" +
 	"\x06source\x18\x02 \x01(\tR\x06source\x12&\n" +
 	"\x05level\x18\x03 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x18\n" +
 	"\amessage\x18\x04 \x01(\tR\amessage\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\"2\n" +
+	"\ttimestamp\x18\x05 \x01(\x03R\ttimestampB\x05\n" +
+	"\x03_id\"2\n" +
 	"\x0eSaveLogRequest\x12 \n" +
 	"\x03log\x18\x01 \x01(\v2\x0e.logstream.LogR\x03log\"!\n" +
 	"\x0fSaveLogResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"9\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"9\n" +
 	"\x15SaveLogsStreamRequest\x12 \n" +
 	"\x03log\x18\x01 \x01(\v2\x0e.logstream.LogR\x03log\"(\n" +
 	"\x16SaveLogsStreamResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x8d\x01\n" +
-	"\x0fListLogsRequest\x12&\n" +
-	"\x05level\x18\x01 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x18\n" +
-	"\akeyword\x18\x02 \x01(\tR\akeyword\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"\x8b\x01\n" +
+	"\x0fListLogsRequest\x12\x16\n" +
+	"\x06source\x18\x01 \x01(\tR\x06source\x12&\n" +
+	"\x05level\x18\x02 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x03 \x01(\x03R\tstartTime\x12\x19\n" +
 	"\bend_time\x18\x04 \x01(\x03R\aendTime\"6\n" +
 	"\x10ListLogsResponse\x12\"\n" +
-	"\x04logs\x18\x01 \x03(\v2\x0e.logstream.LogR\x04logs\"\x93\x01\n" +
-	"\x15ListLogsStreamRequest\x12&\n" +
-	"\x05level\x18\x01 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x18\n" +
-	"\akeyword\x18\x02 \x01(\tR\akeyword\x12\x1d\n" +
+	"\x04logs\x18\x01 \x03(\v2\x0e.logstream.LogR\x04logs\"\x91\x01\n" +
+	"\x15ListLogsStreamRequest\x12\x16\n" +
+	"\x06source\x18\x01 \x01(\tR\x06source\x12&\n" +
+	"\x05level\x18\x02 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x03 \x01(\x03R\tstartTime\x12\x19\n" +
 	"\bend_time\x18\x04 \x01(\x03R\aendTime\":\n" +
@@ -634,6 +635,7 @@ func file_api_logstream_messages_proto_init() {
 	if File_api_logstream_messages_proto != nil {
 		return
 	}
+	file_api_logstream_messages_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

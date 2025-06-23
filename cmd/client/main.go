@@ -39,7 +39,6 @@ func main() {
 
 	saveLog(client, &pb.SaveLogRequest{
 		Log: &pb.Log{
-			Id:        "zxc-123",
 			Source:    "api",
 			Level:     0,
 			Message:   "Something happened",
@@ -48,12 +47,12 @@ func main() {
 	})
 
 	logs := []*pb.Log{
-		{Id: "api-1", Source: "API", Level: 0, Message: "First log", Timestamp: time.Now().Unix()},
-		{Id: "api-2", Source: "API", Level: 0, Message: "Second log", Timestamp: time.Now().Unix()},
-		{Id: "api-3", Source: "API", Level: 0, Message: "Third log", Timestamp: time.Now().Unix()},
-		{Id: "api-4", Source: "API", Level: 0, Message: "Fourth log", Timestamp: time.Now().Unix()},
-		{Id: "api-5", Source: "API", Level: 0, Message: "Fifth log", Timestamp: time.Now().Unix()},
-		{Id: "api-6", Source: "API", Level: 0, Message: "Sixth log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "First log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "Second log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "Third log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "Fourth log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "Fifth log", Timestamp: time.Now().Unix()},
+		{Source: "API", Level: 0, Message: "Sixth log", Timestamp: time.Now().Unix()},
 	}
 	saveLogsStream(client, logs)
 
@@ -138,7 +137,7 @@ func listLogs(client pb.LogsServiceClient, req *pb.ListLogsRequest) {
 	logger.Println("Received logs:")
 	for _, log := range logs {
 		logTime := time.Unix(log.Timestamp, 0)
-		logger.Printf("ID: %s, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
+		logger.Printf("ID: %v, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
 	}
 }
 
@@ -165,6 +164,6 @@ func listLogsStream(client pb.LogsServiceClient, req *pb.ListLogsStreamRequest) 
 		log := res.GetLog()
 
 		logTime := time.Unix(log.Timestamp, 0)
-		logger.Printf("ID: %s, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
+		logger.Printf("ID: %v, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
 	}
 }
