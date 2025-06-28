@@ -20,7 +20,9 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	LogsService_SaveLog_FullMethodName        = "/logstream.LogsService/SaveLog"
-	LogsService_SaveLogsStream_FullMethodName = "/logstream.LogsService/SaveLogsStream"
+	LogsService_SaveLogStream_FullMethodName  = "/logstream.LogsService/SaveLogStream"
+	LogsService_ListLog_FullMethodName        = "/logstream.LogsService/ListLog"
+	LogsService_ListLogStream_FullMethodName  = "/logstream.LogsService/ListLogStream"
 	LogsService_ListLogs_FullMethodName       = "/logstream.LogsService/ListLogs"
 	LogsService_ListLogsStream_FullMethodName = "/logstream.LogsService/ListLogsStream"
 )
@@ -31,11 +33,15 @@ const (
 type LogsServiceClient interface {
 	// SaveLog - save log
 	SaveLog(ctx context.Context, in *SaveLogRequest, opts ...grpc.CallOption) (*SaveLogResponse, error)
-	// SaveLogsStream - save logs
-	SaveLogsStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SaveLogsStreamRequest, SaveLogsStreamResponse], error)
+	// SaveLogStream - save logs in stream
+	SaveLogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SaveLogRequest, SaveLogResponse], error)
+	// ListLog - list log
+	ListLog(ctx context.Context, in *ListLogRequest, opts ...grpc.CallOption) (*ListLogResponse, error)
+	// ListLog - list log in stream
+	ListLogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ListLogRequest, ListLogResponse], error)
 	// ListLogs - list logs
 	ListLogs(ctx context.Context, in *ListLogsRequest, opts ...grpc.CallOption) (*ListLogsResponse, error)
-	// ListLogsStream - list logs
+	// ListLogsStream - list logs in stream
 	ListLogsStream(ctx context.Context, in *ListLogsStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListLogsStreamResponse], error)
 }
 
@@ -57,18 +63,41 @@ func (c *logsServiceClient) SaveLog(ctx context.Context, in *SaveLogRequest, opt
 	return out, nil
 }
 
-func (c *logsServiceClient) SaveLogsStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SaveLogsStreamRequest, SaveLogsStreamResponse], error) {
+func (c *logsServiceClient) SaveLogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SaveLogRequest, SaveLogResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &LogsService_ServiceDesc.Streams[0], LogsService_SaveLogsStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &LogsService_ServiceDesc.Streams[0], LogsService_SaveLogStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[SaveLogsStreamRequest, SaveLogsStreamResponse]{ClientStream: stream}
+	x := &grpc.GenericClientStream[SaveLogRequest, SaveLogResponse]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LogsService_SaveLogsStreamClient = grpc.BidiStreamingClient[SaveLogsStreamRequest, SaveLogsStreamResponse]
+type LogsService_SaveLogStreamClient = grpc.BidiStreamingClient[SaveLogRequest, SaveLogResponse]
+
+func (c *logsServiceClient) ListLog(ctx context.Context, in *ListLogRequest, opts ...grpc.CallOption) (*ListLogResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListLogResponse)
+	err := c.cc.Invoke(ctx, LogsService_ListLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *logsServiceClient) ListLogStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ListLogRequest, ListLogResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &LogsService_ServiceDesc.Streams[1], LogsService_ListLogStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ListLogRequest, ListLogResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type LogsService_ListLogStreamClient = grpc.BidiStreamingClient[ListLogRequest, ListLogResponse]
 
 func (c *logsServiceClient) ListLogs(ctx context.Context, in *ListLogsRequest, opts ...grpc.CallOption) (*ListLogsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -82,7 +111,7 @@ func (c *logsServiceClient) ListLogs(ctx context.Context, in *ListLogsRequest, o
 
 func (c *logsServiceClient) ListLogsStream(ctx context.Context, in *ListLogsStreamRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ListLogsStreamResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &LogsService_ServiceDesc.Streams[1], LogsService_ListLogsStream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &LogsService_ServiceDesc.Streams[2], LogsService_ListLogsStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -105,11 +134,15 @@ type LogsService_ListLogsStreamClient = grpc.ServerStreamingClient[ListLogsStrea
 type LogsServiceServer interface {
 	// SaveLog - save log
 	SaveLog(context.Context, *SaveLogRequest) (*SaveLogResponse, error)
-	// SaveLogsStream - save logs
-	SaveLogsStream(grpc.BidiStreamingServer[SaveLogsStreamRequest, SaveLogsStreamResponse]) error
+	// SaveLogStream - save logs in stream
+	SaveLogStream(grpc.BidiStreamingServer[SaveLogRequest, SaveLogResponse]) error
+	// ListLog - list log
+	ListLog(context.Context, *ListLogRequest) (*ListLogResponse, error)
+	// ListLog - list log in stream
+	ListLogStream(grpc.BidiStreamingServer[ListLogRequest, ListLogResponse]) error
 	// ListLogs - list logs
 	ListLogs(context.Context, *ListLogsRequest) (*ListLogsResponse, error)
-	// ListLogsStream - list logs
+	// ListLogsStream - list logs in stream
 	ListLogsStream(*ListLogsStreamRequest, grpc.ServerStreamingServer[ListLogsStreamResponse]) error
 	mustEmbedUnimplementedLogsServiceServer()
 }
@@ -124,8 +157,14 @@ type UnimplementedLogsServiceServer struct{}
 func (UnimplementedLogsServiceServer) SaveLog(context.Context, *SaveLogRequest) (*SaveLogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveLog not implemented")
 }
-func (UnimplementedLogsServiceServer) SaveLogsStream(grpc.BidiStreamingServer[SaveLogsStreamRequest, SaveLogsStreamResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method SaveLogsStream not implemented")
+func (UnimplementedLogsServiceServer) SaveLogStream(grpc.BidiStreamingServer[SaveLogRequest, SaveLogResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method SaveLogStream not implemented")
+}
+func (UnimplementedLogsServiceServer) ListLog(context.Context, *ListLogRequest) (*ListLogResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLog not implemented")
+}
+func (UnimplementedLogsServiceServer) ListLogStream(grpc.BidiStreamingServer[ListLogRequest, ListLogResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method ListLogStream not implemented")
 }
 func (UnimplementedLogsServiceServer) ListLogs(context.Context, *ListLogsRequest) (*ListLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListLogs not implemented")
@@ -172,12 +211,37 @@ func _LogsService_SaveLog_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogsService_SaveLogsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(LogsServiceServer).SaveLogsStream(&grpc.GenericServerStream[SaveLogsStreamRequest, SaveLogsStreamResponse]{ServerStream: stream})
+func _LogsService_SaveLogStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(LogsServiceServer).SaveLogStream(&grpc.GenericServerStream[SaveLogRequest, SaveLogResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type LogsService_SaveLogsStreamServer = grpc.BidiStreamingServer[SaveLogsStreamRequest, SaveLogsStreamResponse]
+type LogsService_SaveLogStreamServer = grpc.BidiStreamingServer[SaveLogRequest, SaveLogResponse]
+
+func _LogsService_ListLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LogsServiceServer).ListLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LogsService_ListLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LogsServiceServer).ListLog(ctx, req.(*ListLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LogsService_ListLogStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(LogsServiceServer).ListLogStream(&grpc.GenericServerStream[ListLogRequest, ListLogResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type LogsService_ListLogStreamServer = grpc.BidiStreamingServer[ListLogRequest, ListLogResponse]
 
 func _LogsService_ListLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListLogsRequest)
@@ -220,14 +284,24 @@ var LogsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LogsService_SaveLog_Handler,
 		},
 		{
+			MethodName: "ListLog",
+			Handler:    _LogsService_ListLog_Handler,
+		},
+		{
 			MethodName: "ListLogs",
 			Handler:    _LogsService_ListLogs_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SaveLogsStream",
-			Handler:       _LogsService_SaveLogsStream_Handler,
+			StreamName:    "SaveLogStream",
+			Handler:       _LogsService_SaveLogStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "ListLogStream",
+			Handler:       _LogsService_ListLogStream_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

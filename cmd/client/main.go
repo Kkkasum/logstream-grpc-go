@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	logger "log"
@@ -37,133 +38,223 @@ func main() {
 
 	client := pb.NewLogsServiceClient(conn)
 
-	saveLog(client, &pb.SaveLogRequest{
-		Log: &pb.Log{
-			Source:    "api",
-			Level:     0,
-			Message:   "Something happened",
-			Timestamp: 100000,
-		},
+	//saveLog(client, &pb.SaveLogRequest{
+	//	Log: &pb.Log{
+	//		Source:    "api",
+	//		Level:     0,
+	//		Message:   "Something happened",
+	//		Timestamp: 100000,
+	//	},
+	//})
+
+	//reqs := []*pb.SaveLogRequest{
+	//	{
+	//		Log: &pb.Log{Source: "API", Level: 0, Message: "First log", Timestamp: time.Now().Unix()},
+	//	},
+	//	{
+	//		Log: &pb.Log{Source: "API", Level: 0, Message: "Second log", Timestamp: time.Now().Unix()},
+	//	},
+	//	{
+	//		Log: &pb.Log{Source: "API", Level: 0, Message: "Third log", Timestamp: time.Now().Unix()},
+	//	},
+	//	{
+	//		Log: &pb.Log{Source: "API", Level: 0, Message: "Fourth log", Timestamp: time.Now().Unix()},
+	//	},
+	//	{
+	//		Log: &pb.Log{Source: "API", Level: 0, Message: "Fifth log", Timestamp: time.Now().Unix()},
+	//	},
+	//}
+	//saveLogStream(client, reqs)
+
+	listLog(client, &pb.ListLogRequest{
+		Id: 7,
 	})
 
-	logs := []*pb.Log{
-		{Source: "API", Level: 0, Message: "First log", Timestamp: time.Now().Unix()},
-		{Source: "API", Level: 0, Message: "Second log", Timestamp: time.Now().Unix()},
-		{Source: "API", Level: 0, Message: "Third log", Timestamp: time.Now().Unix()},
-		{Source: "API", Level: 0, Message: "Fourth log", Timestamp: time.Now().Unix()},
-		{Source: "API", Level: 0, Message: "Fifth log", Timestamp: time.Now().Unix()},
-		{Source: "API", Level: 0, Message: "Sixth log", Timestamp: time.Now().Unix()},
-	}
-	saveLogsStream(client, logs)
-
-	listLogs(client, &pb.ListLogsRequest{
-		StartTime: 1,
-		EndTime:   10000000000,
-	})
-
-	listLogsStream(client, &pb.ListLogsStreamRequest{
-		StartTime: time.Now().AddDate(0, 0, -1).Unix(),
-		EndTime:   time.Now().Unix(),
-	})
+	//listLogStream(client, []*pb.ListLogRequest{
+	//	{Id: 7},
+	//	{Id: 8},
+	//	{Id: 9},
+	//	{Id: 10},
+	//	{Id: 11},
+	//})
+	//
+	//listLogs(client, &pb.ListLogsRequest{
+	//	StartTime: 1,
+	//	EndTime:   10000000000,
+	//})
+	//
+	//listLogsStream(client, &pb.ListLogsStreamRequest{
+	//	StartTime: time.Now().AddDate(0, 0, -1).Unix(),
+	//	EndTime:   time.Now().Unix(),
+	//})
 }
 
 func saveLog(client pb.LogsServiceClient, req *pb.SaveLogRequest) {
-	logger.Println("SaveLog started...")
+	logger.Println("SaveLog: started...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	res, err := client.SaveLog(ctx, req)
+	resp, err := client.SaveLog(ctx, req)
 	if err != nil {
-		logger.Fatalf("SaveLog failed: %v\n", err)
+		logger.Printf("SaveLog: failed: %v\n", err)
+		return
 	}
 
-	id := res.GetId()
-	logger.Printf("SaveLog result: Log ID %d", id)
+	logger.Printf("SaveLog: received ID %d", resp.GetId())
 }
 
-func saveLogsStream(client pb.LogsServiceClient, logs []*pb.Log) {
-	logger.Println("SaveLogsStream started...")
+func saveLogStream(client pb.LogsServiceClient, reqs []*pb.SaveLogRequest) {
+	logger.Println("SaveLogStream: started...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	stream, err := client.SaveLogsStream(ctx)
+	stream, err := client.SaveLogStream(ctx)
 	if err != nil {
-		logger.Fatalf("SaveLogsStream failed: %v\n", err)
+		logger.Printf("SaveLogStream: failed: %v\n", err)
+		return
 	}
 
-	waitc := make(chan struct{})
+	doneCh := make(chan error)
 
 	go func() {
 		for {
-			in, err := stream.Recv()
-			if err != nil {
-				if err == io.EOF {
-					close(waitc)
-					break
-				}
-				logger.Fatalf("SaveLogsStream failed: %v\n", err)
+			resp, err := stream.Recv()
+			if errors.Is(err, io.EOF) {
+				doneCh <- nil
+				return
 			}
-			logger.Println(in)
+			if err != nil {
+				doneCh <- fmt.Errorf("SaveLogStream: failed to receive resp: %v", err)
+				return
+			}
+
+			logger.Printf("SaveLogStream: received ID %d", resp.GetId())
 		}
 	}()
 
-	for _, log := range logs {
-		req := &pb.SaveLogsStreamRequest{
-			Log: log,
-		}
+	for _, req := range reqs {
 		if err := stream.Send(req); err != nil {
-			logger.Fatalf("SaveLogsStream: stream.Send(%v) failed: %v", log, err)
+			logger.Printf("SaveLogStream: failed to send req: %v\n", err)
 		}
+		logger.Printf("SaveLogStream: sent req with log: %v\n", req.GetLog())
+		time.Sleep(500 * time.Millisecond)
 	}
-	stream.CloseSend()
-	<-waitc
+
+	if err := stream.CloseSend(); err != nil {
+		logger.Printf("SaveLogStream: failed to close stream: %v\n", err)
+	}
+
+	if err := <-doneCh; err != nil {
+		logger.Printf("SaveLogStream: %v\n", err)
+	}
 }
 
-func listLogs(client pb.LogsServiceClient, req *pb.ListLogsRequest) {
-	logger.Println("ListLogs started...")
+func listLog(client pb.LogsServiceClient, req *pb.ListLogRequest) {
+	logger.Println("ListLog: started...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, err := client.ListLogs(ctx, req)
+	resp, err := client.ListLog(ctx, req)
 	if err != nil {
-		logger.Fatalf("ListLogs failed: %v\n", err)
+		logger.Printf("ListLog: failed: %v\n", err)
+		return
 	}
 
-	logs := res.GetLogs()
+	logger.Printf("ListLog: received log: %+v", resp.GetLog())
+}
 
-	logger.Println("Received logs:")
+func listLogStream(client pb.LogsServiceClient, reqs []*pb.ListLogRequest) {
+	logger.Println("ListLogStream: started...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	stream, err := client.ListLogStream(ctx)
+	if err != nil {
+		logger.Printf("ListLogStream: failed: %v\n", err)
+		return
+	}
+
+	doneCh := make(chan error)
+
+	go func() {
+		for {
+			resp, err := stream.Recv()
+			if errors.Is(err, io.EOF) {
+				doneCh <- nil
+				return
+			}
+			if err != nil {
+				doneCh <- fmt.Errorf("ListLogStream: failed to receive resp: %v", err)
+				return
+			}
+
+			logger.Printf("ListLogStream: received log: %+v", resp.GetLog())
+		}
+	}()
+
+	for _, req := range reqs {
+		if err := stream.Send(req); err != nil {
+			logger.Printf("ListLogStream: failed to send req: %v\n", err)
+		}
+		logger.Printf("ListLogStream: sent req with id: %v\n", req.GetId())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	if err := stream.CloseSend(); err != nil {
+		logger.Printf("ListLogStream: failed to close stream: %v\n", err)
+	}
+
+	if err := <-doneCh; err != nil {
+		logger.Printf("ListLogStream: %v\n", err)
+	}
+}
+
+func listLogs(client pb.LogsServiceClient, req *pb.ListLogsRequest) {
+	logger.Println("ListLogs: started...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resp, err := client.ListLogs(ctx, req)
+	if err != nil {
+		logger.Printf("ListLogs: failed: %v\n", err)
+		return
+	}
+
+	logs := resp.GetLogs()
+
+	logger.Println("ListLogs: received logs:")
 	for _, log := range logs {
-		logTime := time.Unix(log.Timestamp, 0)
-		logger.Printf("ID: %v, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
+		logger.Printf("Log: %+v", log)
 	}
 }
 
 func listLogsStream(client pb.LogsServiceClient, req *pb.ListLogsStreamRequest) {
-	logger.Println("ListLogsStream started...")
+	logger.Println("ListLogsStream: started...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	stream, err := client.ListLogsStream(ctx, req)
 	if err != nil {
-		logger.Fatalf("ListLogsStream failed: %v\n", err)
+		logger.Printf("ListLogsStream: failed: %v\n", err)
+		return
 	}
 
 	for {
-		res, err := stream.Recv()
+		resp, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			return
+		}
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			logger.Fatalf("ListLogsStream failed: %v\n", err)
+			logger.Printf("ListLogsStream: failed: %v\n", err)
+			return
 		}
 
-		log := res.GetLog()
-
-		logTime := time.Unix(log.Timestamp, 0)
-		logger.Printf("ID: %v, Source: %s, Message: %s, Time: %s", log.Id, log.Source, log.Message, logTime)
+		logger.Printf("ListLogsStream: received log: %+v", resp.GetLog())
 	}
 }

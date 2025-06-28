@@ -10,6 +10,7 @@ import (
 
 	"logstream/internal/config"
 	"logstream/internal/database"
+	"logstream/internal/server"
 	pb "logstream/pkg/api/logstream"
 )
 
@@ -38,7 +39,7 @@ func main() {
 	log.Printf("Server is listening on %v", addr)
 
 	s := grpc.NewServer()
-	pb.RegisterLogsServiceServer(s, NewServer(db))
+	pb.RegisterLogsServiceServer(s, server.NewServer(db))
 
 	reflection.Register(s)
 

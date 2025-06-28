@@ -10,12 +10,18 @@ service LogsService {
   // SaveLog - save log
   rpc SaveLog(SaveLogRequest) returns (SaveLogResponse);
 
-  // SaveLogsStream - save logs
-  rpc SaveLogsStream(stream SaveLogsStreamRequest) returns (stream SaveLogsStreamResponse);
+  // SaveLogStream - save logs in stream
+  rpc SaveLogStream(stream SaveLogRequest) returns (stream SaveLogResponse);
+
+  // ListLog - list log
+  rpc ListLog(ListLogRequest) returns (ListLogResponse);
+
+  // ListLog - list log in stream
+  rpc ListLogStream(stream ListLogRequest) returns (stream ListLogResponse);
 
   // ListLogs - list logs
   rpc ListLogs(ListLogsRequest) returns (ListLogsResponse);
 
-  // ListLogsStream - list logs
+  // ListLogsStream - list logs in stream
   rpc ListLogsStream(ListLogsStreamRequest) returns (stream ListLogsStreamResponse);
 }

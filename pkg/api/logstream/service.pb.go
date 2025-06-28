@@ -24,34 +24,40 @@ var File_api_logstream_service_proto protoreflect.FileDescriptor
 
 const file_api_logstream_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1bapi/logstream/service.proto\x12\tlogstream\x1a\x1capi/logstream/messages.proto2\xc8\x02\n" +
+	"\x1bapi/logstream/service.proto\x12\tlogstream\x1a\x1capi/logstream/messages.proto2\xc7\x03\n" +
 	"\vLogsService\x12@\n" +
-	"\aSaveLog\x12\x19.logstream.SaveLogRequest\x1a\x1a.logstream.SaveLogResponse\x12Y\n" +
-	"\x0eSaveLogsStream\x12 .logstream.SaveLogsStreamRequest\x1a!.logstream.SaveLogsStreamResponse(\x010\x01\x12C\n" +
+	"\aSaveLog\x12\x19.logstream.SaveLogRequest\x1a\x1a.logstream.SaveLogResponse\x12J\n" +
+	"\rSaveLogStream\x12\x19.logstream.SaveLogRequest\x1a\x1a.logstream.SaveLogResponse(\x010\x01\x12@\n" +
+	"\aListLog\x12\x19.logstream.ListLogRequest\x1a\x1a.logstream.ListLogResponse\x12J\n" +
+	"\rListLogStream\x12\x19.logstream.ListLogRequest\x1a\x1a.logstream.ListLogResponse(\x010\x01\x12C\n" +
 	"\bListLogs\x12\x1a.logstream.ListLogsRequest\x1a\x1b.logstream.ListLogsResponse\x12W\n" +
 	"\x0eListLogsStream\x12 .logstream.ListLogsStreamRequest\x1a!.logstream.ListLogsStreamResponse0\x01B'Z%logstream/pkg/api/logstream;logstreamb\x06proto3"
 
 var file_api_logstream_service_proto_goTypes = []any{
 	(*SaveLogRequest)(nil),         // 0: logstream.SaveLogRequest
-	(*SaveLogsStreamRequest)(nil),  // 1: logstream.SaveLogsStreamRequest
+	(*ListLogRequest)(nil),         // 1: logstream.ListLogRequest
 	(*ListLogsRequest)(nil),        // 2: logstream.ListLogsRequest
 	(*ListLogsStreamRequest)(nil),  // 3: logstream.ListLogsStreamRequest
 	(*SaveLogResponse)(nil),        // 4: logstream.SaveLogResponse
-	(*SaveLogsStreamResponse)(nil), // 5: logstream.SaveLogsStreamResponse
+	(*ListLogResponse)(nil),        // 5: logstream.ListLogResponse
 	(*ListLogsResponse)(nil),       // 6: logstream.ListLogsResponse
 	(*ListLogsStreamResponse)(nil), // 7: logstream.ListLogsStreamResponse
 }
 var file_api_logstream_service_proto_depIdxs = []int32{
 	0, // 0: logstream.LogsService.SaveLog:input_type -> logstream.SaveLogRequest
-	1, // 1: logstream.LogsService.SaveLogsStream:input_type -> logstream.SaveLogsStreamRequest
-	2, // 2: logstream.LogsService.ListLogs:input_type -> logstream.ListLogsRequest
-	3, // 3: logstream.LogsService.ListLogsStream:input_type -> logstream.ListLogsStreamRequest
-	4, // 4: logstream.LogsService.SaveLog:output_type -> logstream.SaveLogResponse
-	5, // 5: logstream.LogsService.SaveLogsStream:output_type -> logstream.SaveLogsStreamResponse
-	6, // 6: logstream.LogsService.ListLogs:output_type -> logstream.ListLogsResponse
-	7, // 7: logstream.LogsService.ListLogsStream:output_type -> logstream.ListLogsStreamResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	0, // 1: logstream.LogsService.SaveLogStream:input_type -> logstream.SaveLogRequest
+	1, // 2: logstream.LogsService.ListLog:input_type -> logstream.ListLogRequest
+	1, // 3: logstream.LogsService.ListLogStream:input_type -> logstream.ListLogRequest
+	2, // 4: logstream.LogsService.ListLogs:input_type -> logstream.ListLogsRequest
+	3, // 5: logstream.LogsService.ListLogsStream:input_type -> logstream.ListLogsStreamRequest
+	4, // 6: logstream.LogsService.SaveLog:output_type -> logstream.SaveLogResponse
+	4, // 7: logstream.LogsService.SaveLogStream:output_type -> logstream.SaveLogResponse
+	5, // 8: logstream.LogsService.ListLog:output_type -> logstream.ListLogResponse
+	5, // 9: logstream.LogsService.ListLogStream:output_type -> logstream.ListLogResponse
+	6, // 10: logstream.LogsService.ListLogs:output_type -> logstream.ListLogsResponse
+	7, // 11: logstream.LogsService.ListLogsStream:output_type -> logstream.ListLogsStreamResponse
+	6, // [6:12] is the sub-list for method output_type
+	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

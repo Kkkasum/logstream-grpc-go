@@ -26,7 +26,7 @@ type Suite struct {
 	ctx  context.Context
 }
 
-func TestSuite(t *testing.T) {
+func TestRepoSuite(t *testing.T) {
 	suite.Run(t, &Suite{})
 }
 
@@ -48,16 +48,13 @@ func (s *Suite) TearDownSuite() {
 }
 
 func (s *Suite) TestGetLog() {
-	type testCase struct {
+	testCases := []struct {
 		name        string
 		inputLogId  int32
 		mockSetup   func(mock sqlmock.Sqlmock)
-		expectedLog *pb.Log
+		expectedLog *repo.Log
 		expectedErr string
-	}
-
-	now := time.Now().Unix()
-	testCases := []testCase{
+	}{
 		{
 			name:       "get log",
 			inputLogId: 1,
@@ -66,16 +63,15 @@ func (s *Suite) TestGetLog() {
 					`SELECT id, source, lvl, message, created_at FROM logs WHERE id = $1`)).
 					WithArgs(1).
 					WillReturnRows(sqlmock.NewRows([]string{"id", "source", "lvl", "message", "created_at"}).
-						AddRow(1, "test-source", pb.Level_LEVEL_INFO, "test message", now))
+						AddRow(1, "test-source", pb.Level_LEVEL_INFO, "test message", time.Now().Unix()))
 			},
-			expectedLog: &pb.Log{
+			expectedLog: &repo.Log{
 				Id:        func() *int32 { id := int32(1); return &id }(),
 				Source:    "test-source",
-				Level:     pb.Level_LEVEL_INFO,
+				Level:     int32(pb.Level_LEVEL_INFO),
 				Message:   "test message",
-				Timestamp: now,
+				CreatedAt: time.Now().Unix(),
 			},
-			expectedErr: "",
 		},
 		{
 			name:       "log not found",
@@ -110,18 +106,16 @@ func (s *Suite) TestGetLog() {
 }
 
 func (s *Suite) TestGetLogs() {
-	type testCase struct {
+	testCases := []struct {
 		name           string
 		inputSource    string
 		inputLevel     int32
 		inputStartTime int64
 		inputEndTime   int64
 		mockSetup      func(mock sqlmock.Sqlmock)
-		expectedLogs   []*pb.Log
+		expectedLogs   []*repo.Log
 		expectedErr    string
-	}
-
-	testCases := []testCase{
+	}{
 		{
 			name:           "get logs",
 			inputSource:    "test-source",
@@ -130,29 +124,28 @@ func (s *Suite) TestGetLogs() {
 			inputEndTime:   1000000,
 			mockSetup: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(regexp.QuoteMeta(
-					`SELECT id, source, lvl, message, created_at FROM logs WHERE source = $1 AND level = $2 AND created_at >= $3 AND created_at <= $4`)).
+					`SELECT id, source, lvl, message, created_at FROM logs WHERE source = $1 AND lvl = $2 AND created_at >= $3 AND created_at <= $4`)).
 					WithArgs("test-source", 1, 10000, 1000000).
 					WillReturnRows(sqlmock.NewRows([]string{"id", "source", "lvl", "message", "created_at"}).
-						AddRow(1, "test-source", pb.Level_LEVEL_WARN, "test message 1", time.Now().Unix()).
-						AddRow(2, "test-source", pb.Level_LEVEL_WARN, "test message 2", time.Now().Unix()))
+						AddRow(1, "test-source", 1, "test message 1", 10000).
+						AddRow(2, "test-source", 1, "test message 2", 10001))
 			},
-			expectedLogs: []*pb.Log{
+			expectedLogs: []*repo.Log{
 				{
 					Id:        func() *int32 { id := int32(1); return &id }(),
 					Source:    "test-source",
-					Level:     pb.Level_LEVEL_WARN,
+					Level:     int32(pb.Level_LEVEL_WARN),
 					Message:   "test message 1",
-					Timestamp: time.Now().Unix(),
+					CreatedAt: 10000,
 				},
 				{
 					Id:        func() *int32 { id := int32(2); return &id }(),
 					Source:    "test-source",
-					Level:     pb.Level_LEVEL_WARN,
+					Level:     int32(pb.Level_LEVEL_WARN),
 					Message:   "test message 2",
-					Timestamp: time.Now().Unix(),
+					CreatedAt: 10001,
 				},
 			},
-			expectedErr: "",
 		},
 		{
 			name:        "invalid log level",
@@ -164,7 +157,7 @@ func (s *Suite) TestGetLogs() {
 			name: "logs not found",
 			mockSetup: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(regexp.QuoteMeta(
-					`SELECT id, source, lvl, message, created_at FROM logs WHERE source = $1 AND level = $2 AND created_at >= $3 AND created_at <= $4`)).
+					`SELECT id, source, lvl, message, created_at FROM logs WHERE source = $1 AND lvl = $2 AND created_at >= $3 AND created_at <= $4`)).
 					WithArgs("", 0, 0, 0).
 					WillReturnError(sql.ErrNoRows)
 			},
@@ -180,33 +173,31 @@ func (s *Suite) TestGetLogs() {
 
 			if tc.expectedErr == "" {
 				require.NoError(t, err)
+				assert.ElementsMatch(t, tc.expectedLogs, actualLogs)
 			} else {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tc.expectedErr)
 				assert.Nil(t, actualLogs)
 			}
-			assert.ElementsMatch(t, tc.expectedLogs, actualLogs)
 		})
 	}
 }
 
 func (s *Suite) TestAddLog() {
-	type testCase struct {
+	testCases := []struct {
 		name        string
-		inputLog    *pb.Log
+		inputLog    *repo.Log
 		mockSetup   func(mock sqlmock.Sqlmock)
 		expectedId  int32
 		expectedErr string
-	}
-
-	testCases := []testCase{
+	}{
 		{
 			name: "add log",
-			inputLog: &pb.Log{
+			inputLog: &repo.Log{
 				Source:    "test-source",
-				Level:     pb.Level_LEVEL_INFO,
+				Level:     int32(pb.Level_LEVEL_INFO),
 				Message:   "test message",
-				Timestamp: time.Now().Unix(),
+				CreatedAt: time.Now().Unix(),
 			},
 			mockSetup: func(mock sqlmock.Sqlmock) {
 				mock.ExpectQuery(regexp.QuoteMeta(
@@ -214,16 +205,15 @@ func (s *Suite) TestAddLog() {
 					WithArgs("test-source", pb.Level_LEVEL_INFO, "test message", time.Now().Unix()).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 			},
-			expectedId:  1,
-			expectedErr: "",
+			expectedId: 1,
 		},
 		{
 			name: "invalid level",
-			inputLog: &pb.Log{
+			inputLog: &repo.Log{
 				Source:    "test-source",
 				Level:     1000,
 				Message:   "test message",
-				Timestamp: time.Now().Unix(),
+				CreatedAt: time.Now().Unix(),
 			},
 			mockSetup:   func(mock sqlmock.Sqlmock) {},
 			expectedId:  0,
@@ -249,29 +239,27 @@ func (s *Suite) TestAddLog() {
 }
 
 func (s *Suite) TestAddLogs() {
-	type testCase struct {
+	testCases := []struct {
 		name        string
-		inputLogs   []*pb.Log
+		inputLogs   []*repo.Log
 		mockSetup   func(mock sqlmock.Sqlmock)
 		expectedIds []int32
 		expectedErr string
-	}
-
-	testCases := []testCase{
+	}{
 		{
 			name: "add logs",
-			inputLogs: []*pb.Log{
+			inputLogs: []*repo.Log{
 				{
 					Source:    "test-source-1",
-					Level:     pb.Level_LEVEL_INFO,
+					Level:     int32(pb.Level_LEVEL_INFO),
 					Message:   "test message 1",
-					Timestamp: time.Now().Unix(),
+					CreatedAt: time.Now().Unix(),
 				},
 				{
 					Source:    "test-source-2",
-					Level:     pb.Level_LEVEL_WARN,
+					Level:     int32(pb.Level_LEVEL_WARN),
 					Message:   "test message 2",
-					Timestamp: time.Now().Unix(),
+					CreatedAt: time.Now().Unix(),
 				},
 			},
 			mockSetup: func(mock sqlmock.Sqlmock) {
@@ -284,11 +272,10 @@ func (s *Suite) TestAddLogs() {
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1).AddRow(2))
 			},
 			expectedIds: []int32{1, 2},
-			expectedErr: "",
 		},
 		{
 			name:        "add zero logs",
-			inputLogs:   []*pb.Log{},
+			inputLogs:   []*repo.Log{},
 			mockSetup:   func(mock sqlmock.Sqlmock) {},
 			expectedIds: nil,
 			expectedErr: "no logs to add",

@@ -234,71 +234,71 @@ func (x *SaveLogResponse) GetId() int32 {
 	return 0
 }
 
-type SaveLogsStreamRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Log           *Log                   `protobuf:"bytes,1,opt,name=log,proto3" json:"log,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SaveLogsStreamRequest) Reset() {
-	*x = SaveLogsStreamRequest{}
-	mi := &file_api_logstream_messages_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SaveLogsStreamRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SaveLogsStreamRequest) ProtoMessage() {}
-
-func (x *SaveLogsStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_logstream_messages_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SaveLogsStreamRequest.ProtoReflect.Descriptor instead.
-func (*SaveLogsStreamRequest) Descriptor() ([]byte, []int) {
-	return file_api_logstream_messages_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *SaveLogsStreamRequest) GetLog() *Log {
-	if x != nil {
-		return x.Log
-	}
-	return nil
-}
-
-type SaveLogsStreamResponse struct {
+type ListLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SaveLogsStreamResponse) Reset() {
-	*x = SaveLogsStreamResponse{}
+func (x *ListLogRequest) Reset() {
+	*x = ListLogRequest{}
+	mi := &file_api_logstream_messages_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListLogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListLogRequest) ProtoMessage() {}
+
+func (x *ListLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_logstream_messages_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListLogRequest.ProtoReflect.Descriptor instead.
+func (*ListLogRequest) Descriptor() ([]byte, []int) {
+	return file_api_logstream_messages_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListLogRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type ListLogResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Log           *Log                   `protobuf:"bytes,1,opt,name=log,proto3" json:"log,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListLogResponse) Reset() {
+	*x = ListLogResponse{}
 	mi := &file_api_logstream_messages_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SaveLogsStreamResponse) String() string {
+func (x *ListLogResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SaveLogsStreamResponse) ProtoMessage() {}
+func (*ListLogResponse) ProtoMessage() {}
 
-func (x *SaveLogsStreamResponse) ProtoReflect() protoreflect.Message {
+func (x *ListLogResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_logstream_messages_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -310,16 +310,16 @@ func (x *SaveLogsStreamResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SaveLogsStreamResponse.ProtoReflect.Descriptor instead.
-func (*SaveLogsStreamResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListLogResponse.ProtoReflect.Descriptor instead.
+func (*ListLogResponse) Descriptor() ([]byte, []int) {
 	return file_api_logstream_messages_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *SaveLogsStreamResponse) GetId() int32 {
+func (x *ListLogResponse) GetLog() *Log {
 	if x != nil {
-		return x.Id
+		return x.Log
 	}
-	return 0
+	return nil
 }
 
 type ListLogsRequest struct {
@@ -561,11 +561,11 @@ const file_api_logstream_messages_proto_rawDesc = "" +
 	"\x0eSaveLogRequest\x12 \n" +
 	"\x03log\x18\x01 \x01(\v2\x0e.logstream.LogR\x03log\"!\n" +
 	"\x0fSaveLogResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\"9\n" +
-	"\x15SaveLogsStreamRequest\x12 \n" +
-	"\x03log\x18\x01 \x01(\v2\x0e.logstream.LogR\x03log\"(\n" +
-	"\x16SaveLogsStreamResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\"\x8b\x01\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\" \n" +
+	"\x0eListLogRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"3\n" +
+	"\x0fListLogResponse\x12 \n" +
+	"\x03log\x18\x01 \x01(\v2\x0e.logstream.LogR\x03log\"\x8b\x01\n" +
 	"\x0fListLogsRequest\x12\x16\n" +
 	"\x06source\x18\x01 \x01(\tR\x06source\x12&\n" +
 	"\x05level\x18\x02 \x01(\x0e2\x10.logstream.LevelR\x05level\x12\x1d\n" +
@@ -608,8 +608,8 @@ var file_api_logstream_messages_proto_goTypes = []any{
 	(*Log)(nil),                    // 1: logstream.Log
 	(*SaveLogRequest)(nil),         // 2: logstream.SaveLogRequest
 	(*SaveLogResponse)(nil),        // 3: logstream.SaveLogResponse
-	(*SaveLogsStreamRequest)(nil),  // 4: logstream.SaveLogsStreamRequest
-	(*SaveLogsStreamResponse)(nil), // 5: logstream.SaveLogsStreamResponse
+	(*ListLogRequest)(nil),         // 4: logstream.ListLogRequest
+	(*ListLogResponse)(nil),        // 5: logstream.ListLogResponse
 	(*ListLogsRequest)(nil),        // 6: logstream.ListLogsRequest
 	(*ListLogsResponse)(nil),       // 7: logstream.ListLogsResponse
 	(*ListLogsStreamRequest)(nil),  // 8: logstream.ListLogsStreamRequest
@@ -618,7 +618,7 @@ var file_api_logstream_messages_proto_goTypes = []any{
 var file_api_logstream_messages_proto_depIdxs = []int32{
 	0, // 0: logstream.Log.level:type_name -> logstream.Level
 	1, // 1: logstream.SaveLogRequest.log:type_name -> logstream.Log
-	1, // 2: logstream.SaveLogsStreamRequest.log:type_name -> logstream.Log
+	1, // 2: logstream.ListLogResponse.log:type_name -> logstream.Log
 	0, // 3: logstream.ListLogsRequest.level:type_name -> logstream.Level
 	1, // 4: logstream.ListLogsResponse.logs:type_name -> logstream.Log
 	0, // 5: logstream.ListLogsStreamRequest.level:type_name -> logstream.Level

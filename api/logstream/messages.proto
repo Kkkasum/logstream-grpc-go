@@ -26,12 +26,12 @@ message SaveLogResponse {
   int32 id = 1;
 }
 
-message SaveLogsStreamRequest {
-  Log log = 1;
+message ListLogRequest {
+  int32 id = 1;
 }
 
-message SaveLogsStreamResponse {
-  int32 id = 1;
+message ListLogResponse {
+  Log log = 1;
 }
 
 message ListLogsRequest {
