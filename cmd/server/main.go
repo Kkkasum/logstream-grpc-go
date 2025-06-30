@@ -24,7 +24,7 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	db, err := database.NewDB(&cfg.DBConfig)
+	db, err := database.NewDB(cfg.DBConfig)
 	if err != nil {
 		log.Fatalf("failed to init db: %v", err)
 	}

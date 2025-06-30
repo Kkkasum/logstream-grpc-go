@@ -11,8 +11,8 @@ import (
 )
 
 type Config struct {
-	ServerConfig ServerConfig `json:"server"`
-	DBConfig     DBConfig     `json:"db"`
+	ServerConfig *ServerConfig `json:"server"`
+	DBConfig     *DBConfig     `json:"db"`
 }
 
 type ServerConfig struct {

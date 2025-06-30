@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/confluentinc/confluent-kafka-go/v2 v2.10.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
