@@ -2,6 +2,5 @@
 
 ## To-do:
 
-1. Docker-файл
-2. Kafka
-3. Тесты (`testcontainers`)
+1. Docker and docker-compose
+2. Тесты (`testcontainers`)
